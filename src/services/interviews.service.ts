@@ -2,6 +2,14 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 const supabase = createClientComponentClient();
 
+const normalizeInterviewPayload = (payload: any) => {
+  if (payload?.interviewer_id === 0) {
+    return { ...payload, interviewer_id: null };
+  }
+
+  return payload;
+};
+
 const getAllInterviews = async (userId: string, organizationId: string) => {
   try {
     const { data: clientData, error: clientError } = await supabase
@@ -34,9 +42,10 @@ const getInterviewById = async (id: string) => {
 };
 
 const updateInterview = async (payload: any, id: string) => {
+  const normalizedPayload = normalizeInterviewPayload(payload);
   const { error, data } = await supabase
     .from("interview")
-    .update({ ...payload })
+    .update({ ...normalizedPayload })
     .eq("id", id);
   if (error) {
     console.log(error);
@@ -74,7 +83,8 @@ const getAllRespondents = async (interviewId: string) => {
 };
 
 const createInterview = async (payload: any) => {
-  const { error, data } = await supabase.from("interview").insert({ ...payload });
+  const normalizedPayload = normalizeInterviewPayload(payload);
+  const { error, data } = await supabase.from("interview").insert({ ...normalizedPayload });
   if (error) {
     console.log(error);
 
