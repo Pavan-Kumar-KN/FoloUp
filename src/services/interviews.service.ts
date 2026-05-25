@@ -3,7 +3,9 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 const supabase = createClientComponentClient();
 
 const normalizeInterviewPayload = (payload: any) => {
-  if (payload?.interviewer_id === 0) {
+    const id = payload?.interviewer_id;
+  if(id === undefined || id === null) return payload;
+  if (String(id) === "0") {
     return { ...payload, interviewer_id: null };
   }
 
